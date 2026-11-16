@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+_mentor_run.py
+mentor_server.*
+.venv/
+.idea/
+.vscode/
