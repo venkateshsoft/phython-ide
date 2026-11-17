@@ -500,3 +500,34 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 });
 </script>
+<script>
+// Robust runner: execute the editor contents directly and capture stdout.
+window.addEventListener('load', function () {
+  const editor = document.querySelector('#editor');
+  const output = document.querySelector('#out');
+  if (!editor || !output) return;
+
+  // Remove accidental Git conflict markers from the starter code.
+  editor.value = editor.value.replace(/^<<<<<<<.*\r?\n?|^=======\r?\n?|^>>>>>>>.*\r?\n?/gm, '');
+
+  window.run = async function () {
+    try {
+      const python = await window.getPy();
+      let captured = '';
+
+      python.setStdout({
+        batched: function (text) {
+          captured += text;
+        }
+      });
+
+      python.runPython(editor.value);
+      output.className = 'ok';
+      output.textContent = captured || 'Program completed successfully.';
+    } catch (error) {
+      output.className = 'bad';
+      output.textContent = String(error);
+    }
+  };
+});
+</script>
