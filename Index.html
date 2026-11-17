@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Mentor IDE</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0f172a; color: #e2e8f0; font: 15px system-ui, sans-serif; }
+    header { padding: 16px 22px; background: #1e293b; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    h1 { font-size: 20px; margin: 0 18px 0 0; width: 100%; }
+    .toolbar { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+    .sidebar-section { margin-top: 22px; }
+    .shortcut-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .shortcut-list li { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; }
+    .shortcut-list code { color: #93c5fd; font-weight: 600; }
+    .shortcut-list span { display: block; color: #cbd5e1; font-size: 12px; margin-top: 3px; }
+    button { border: 0; border-radius: 6px; padding: 9px 14px; background: #2563eb; color: white; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { opacity: .6; cursor: wait; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: calc(100vh - 68px); }
+    textarea { width: 100%; min-height: 600px; padding: 20px; background: #020617; color: #dbeafe; border: 0; outline: 0; font: 15px Consolas, monospace; line-height: 1.55; resize: vertical; tab-size: 4; }
+    aside { padding: 18px; background: #172033; min-width: 0; overflow-wrap: anywhere; }
+    aside h2 { margin-top: 4px; }
+    .sidebar-section h2 { font-size: 17px; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #020617; padding: 14px; border-radius: 6px; min-height: 140px; }
+    .ok { color: #86efac; }
+    .bad { color: #fca5a5; }
+    .muted { color: #94a3b8; }
+    @media (max-width: 800px) { main { grid-template-columns: 1fr; } aside { min-height: 250px; } textarea { min-height: 420px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Python Mentor IDE</h1>
+    <div class="toolbar">
+      <button id="checkButton" type="button">Check code</button>
+      <button id="fixButton" type="button">Auto-fix intent</button>
+      <button id="runButton" type="button">Run</button>
+      <button id="clearButton" type="button">Clear</button>
+    </div>
+  </header>
+
+  <main>
+    <textarea id="editor" spellcheck="false" aria-label="Python code editor"># Try describing your intent with a keyword
+# Example: identify duplicate items
+items = [1, 2, 2, 3, 4, 4]
+
+seen = set()
+duplicates = set()
+
+for item in items:
+    if item in seen:
+        duplicates.add(item)
+    else:
+        seen.add(item)
+
+print(duplicates)</textarea>
+    <aside>
+      <h2>Mentor feedback</h2>
+      <pre id="out" aria-live="polite">Ready. Click Run to execute your Python code.</pre>
+      <section class="sidebar-section">
+        <h2>Python shortcuts</h2>
+        <p class="muted">Type a short command in the editor, then press Enter or Tab to insert the example.</p>
+        <ul class="shortcut-list">
+          <li><code>.du</code><span>Find duplicate items</span></li>
+          <li><code>.fb</code><span>Generate Fibonacci numbers</span></li>
+          <li><code>.pr</code><span>Check whether a number is prime</span></li>
+          <li><code>.fa</code><span>Calculate a factorial</span></li>
+          <li><code>.pa</code><span>Check a palindrome</span></li>
+          <li><code>.an</code><span>Compare two words</span></li>
+          <li><code>.fr</code><span>Count item frequency</span></li>
+          <li><code>.rv</code><span>Reverse a string</span></li>
+          <li><code>.sl</code><span>Find the second-largest number</span></li>
+          <li><code>.sd</code><span>Sort a dictionary by value</span></li>
+          <li><code>.mi</code><span>Find a missing number</span></li>
+          <li><code>.http</code><span>Validate HTTP response status</span></li>
+          <li><code>.log</code><span>Find ERROR entries in a log file</span></li>
+          <li><code>.alarm</code><span>Find the most frequent alarm</span></li>
+          <li><code>.ip</code><span>Validate IPv4 / IPv6 addresses</span></li>
+          <li><code>.sub</code><span>Calculate subnet details</span></li>
+          <li><code>.route</code><span>Find the longest-prefix route</span></li>
+          <li><code>.logip</code><span>Count IP addresses in logs</span></li>
+          <li><code>.json</code><span>Validate a network event payload</span></li>
+          <li><code>.retry</code><span>Simulate API retry handling</span></li>
+          <li><code>.qos</code><span>Check latency against a threshold</span></li>
+          <li><code>.port</code><span>Identify common network ports</span></li>
+          <li><code>.tcpudp</code><span>Compare TCP and UDP behavior</span></li>
+          <li><code>.dns</code><span>Practise DNS lookup logic</span></li>
+          <li><code>.fl</code><span>Count and filter lines</span></li>
+        </ul>
+      </section>
+      <p class="muted sidebar-section">
+        This browser IDE uses Pyodide to run Python locally in your browser.
+        Auto-fix intent provides templates for common beginner exercises.
+      </p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+  <script>
+    "use strict";
+
+    const editor = document.querySelector("#editor");
+    const output = document.querySelector("#out");
+    const runButton = document.querySelector("#runButton");
+    const checkButton = document.querySelector("#checkButton");
+    const fixButton = document.querySelector("#fixButton");
+    const clearButton = document.querySelector("#clearButton");
+
+    let pyodidePromise = null;
+
+    function setMessage(message, kind) {
+      output.className = kind || "";
+      output.textContent = message;
+    }
+
+    async function getPyodide() {
+      if (!pyodidePromise) {
+        setMessage("Loading browser Python runtime...", "");
+        pyodidePromise = loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/"
+        }).catch(error => {
+          pyodidePromise = null;
+          throw error;
+        });
+      }
+      return await pyodidePromise;
+    }
+
+    function code(...lines) {
+      return lines.join("\n") + "\n";
+    }
+
+    function dataExpr(source) {
+      const match = source.match(
+        /\b(?:items|values|numbers|data)\s*=\s*(\[[^\n]*\]|\([^\n]*\))/
+      );
+      return match ? match[1] : "[1, 2, 3]";
+    }
+
+    function fixCode(source) {
+      const lower = source.toLowerCase();
+      const data = dataExpr(source);
+
+      if (/duplicate|repeated item/.test(lower)) {
+        return [code(
+          "# Auto-corrected intent: duplicate detection",
+          `items = ${data}`,
+          "seen = set()",
+          "duplicates = set()",
+          "for item in items:",
+          "    if item in seen:",
+          "        duplicates.add(item)",
+          "    else:",
+          "        seen.add(item)",
+          "print('Duplicate items:', duplicates)"
+        ), "Intent recognized: duplicate detection."];
+      }
+
+      if (/factorial/.test(lower)) {
+        return [code(
+          "number = 5",
+          "result = 1",
+          "for value in range(2, number + 1):",
+          "    result *= value",
+          "print('Factorial:', result)"
+        ), "Intent recognized: factorial calculation."];
+      }
+
+      if (/fibonacci|fibonocci/.test(lower)) {
+        return [code(
+          "count = 10",
+          "a, b = 0, 1",
+          "sequence = []",
+          "for _ in range(count):",
+          "    sequence.append(a)",
+          "    a, b = b, a + b",
+          "print('Fibonacci:', sequence)"
+        ), "Intent recognized: Fibonacci sequence."];
+      }
+
+      if (/\bprime\b/.test(lower)) {
+        return [code(
+          "number = 29",
+          "is_prime = number > 1 and all(",
+          "    number % divisor",
+          "    for divisor in range(2, int(number ** 0.5) + 1)",
+          ")",
+          "print('Prime:', is_prime)"
+        ), "Intent recognized: prime test."];
+      }
+
+      if (/palindrome/.test(lower)) {
+        return [code(
+          "text = 'level'",
+          "clean = ''.join(",
+          "    character.lower()",
+          "    for character in text",
+          "    if character.isalnum()",
+          ")",
+          "print('Palindrome:', clean == clean[::-1])"
+        ), "Intent recognized: palindrome test."];
+      }
+
+      if (/reverse/.test(lower)) {
+        return [code(
+          `items = ${data}`,
+          "print('Reversed:', items[::-1])"
+        ), "Intent recognized: reverse sequence."];
+      }
+
+      if (/\beven\b|\bodd\b/.test(lower)) {
+        return [code(
+          "number = 10",
+          "print('Even' if number % 2 == 0 else 'Odd')"
+        ), "Intent recognized: even/odd classification."];
+      }
+
+      if (/sum|total|add numbers/.test(lower)) {
+        return [code(
+          `items = ${data}`,
+          "print('Total:', sum(items))"
+        ), "Intent recognized: sum/total calculation."];
+      }
+
+      const corrected = source
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(
+          /^(\s*(?:if|for|while|def|class|elif|else|try|except|finally|with)\b[^:\n]*)$/gm,
+          "$1:"
+        );
+
+      return [
+        corrected,
+        corrected !== source
+          ? "Auto-fix applied: corrected common syntax punctuation."
+          : "No safe automatic correction found. Your code was left unchanged."
+      ];
+    }
+
+    async function withBusy(button, action) {
+      const buttons = [runButton, checkButton, fixButton, clearButton];
+      buttons.forEach(item => item.disabled = true);
+      try {
+        await action();
+      } finally {
+        buttons.forEach(item => item.disabled = false);
+      }
+    }
+
+    async function checkCode() {
+      await withBusy(checkButton, async () => {
+        try {
+          const python = await getPyodide();
+          // compile() checks syntax without executing the user's program.
+          const source = "compile(" + JSON.stringify(editor.value) + ", '<editor>', 'exec')";
+          python.runPython(source);
+          setMessage("OK: no syntax errors found. Your code was not executed.", "ok");
+        } catch (error) {
+          setMessage(String(error), "bad");
+        }
+      });
+    }
+
+    async function autoFix() {
+      await withBusy(fixButton, async () => {
+        const [corrected, explanation] = fixCode(editor.value);
+        editor.value = corrected;
+        try {
+          const python = await getPyodide();
+          const source = "compile(" + JSON.stringify(editor.value) + ", '<editor>', 'exec')";
+          python.runPython(source);
+          setMessage(explanation + "\n\nCode passed the syntax check. Click Run to execute it.", "ok");
+        } catch (error) {
+          setMessage(explanation + "\n\n" + String(error), "bad");
+        }
+      });
+    }
+
+    async function runCode() {
+      await withBusy(runButton, async () => {
+        try {
+          const python = await getPyodide();
+          let capturedOutput = "";
+          let capturedErrors = "";
+
+          // Capture stdout/stderr without constructing a second Python exec() wrapper.
+          python.setStdout({
+            batched: text => { capturedOutput += text; }
+          });
+          python.setStderr({
+            batched: text => { capturedErrors += text; }
+          });
+
+          await python.runPythonAsync(editor.value);
+
+          const result = capturedOutput + (capturedErrors ? "\n" + capturedErrors : "");
+          setMessage(result || "Program completed successfully (no output).", "ok");
+        } catch (error) {
+          setMessage(String(error), "bad");
+        }
+      });
+    }
+
+    function clearAll() {
+      editor.value = "";
+      setMessage("Screen cleared.", "");
+      editor.focus();
+    }
+
+    checkButton.addEventListener("click", checkCode);
+    fixButton.addEventListener("click", autoFix);
+    runButton.addEventListener("click", runCode);
+    clearButton.addEventListener("click", clearAll);
+
+    // Interview-practice shortcuts: type one shortcut and press Enter or Tab.
+    const snippets = {
+      ".du": code(
+        "items = [1, 2, 2, 3, 4, 4]",
+        "seen = set()",
+        "duplicates = set()",
+        "for item in items:",
+        "    if item in seen:",
+        "        duplicates.add(item)",
+        "    else:",
+        "        seen.add(item)",
+        "print('Duplicate items:', duplicates)"
+      ),
+      ".fb": code(
+        "count = 10",
+        "a, b = 0, 1",
+        "for _ in range(count):",
+        "    print(a, end=' ')",
+        "    a, b = b, a + b"
+      ),
+      ".pr": code(
+        "number = 29",
+        "is_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))",
+        "print('Prime:', is_prime)"
+      ),
+      ".fa": code(
+        "number = 5",
+        "result = 1",
+        "for value in range(2, number + 1):",
+        "    result *= value",
+        "print('Factorial:', result)"
+      ),
+      ".pa": code(
+        "text = 'level'",
+        "clean = ''.join(character.lower() for character in text if character.isalnum())",
+        "print('Palindrome:', clean == clean[::-1])"
+      ),
+      ".an": code(
+        "first = 'listen'",
+        "second = 'silent'",
+        "print('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))"
+      ),
+      ".fr": code(
+        "items = ['a', 'b', 'a', 'c', 'b', 'a']",
+        "frequency = {}",
+        "for item in items:",
+        "    frequency[item] = frequency.get(item, 0) + 1",
+        "print('Frequency:', frequency)"
+      ),
+      ".rv": code(
+        "text = 'Nokia Python'",
+        "print('Reversed:', text[::-1])"
+      ),
+      ".sl": code(
+        "numbers = [10, 4, 8, 20, 15]",
+        "unique_numbers = sorted(set(numbers))",
+        "print('Second largest:', unique_numbers[-2])"
+      ),
+      ".sd": code(
+        "scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}",
+        "ordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))",
+        "print('Sorted scores:', ordered)"
+      ),
+      ".mi": code(
+        "numbers = [1, 2, 4, 5, 6]",
+        "expected = set(range(1, len(numbers) + 2))",
+        "print('Missing number:', (expected - set(numbers)).pop())"
+      ),
+      ".fl": code(
+        "text = 'first line' + chr(10) + 'second line' + chr(10) + 'third line'",
+        "lines = text.splitlines()",
+        "print('Line count:', len(lines))",
+        "print('Non-empty lines:', [line for line in lines if line.strip()])"
+      ),
+      ".http": code(
+        "def validate_response(status_code):",
+        "    if status_code == 200:",
+        "        return 'PASS'",
+        "    else:",
+        "        return 'FAIL'",
+        "",
+        "result = validate_response(200)",
+        "print(result)"
+      ),
+      ".log": code(
+        "# Demo: create a sample log file in the browser's Python filesystem",
+        "log_content = 'INFO Service started' + chr(10) + 'ERROR API request failed' + chr(10) + 'INFO Retry completed' + chr(10) + 'ERROR Timeout while processing event'",
+        "with open('application.log', 'w') as file:",
+        "    file.write(log_content)",
+        "",
+        "with open('application.log', 'r') as file:",
+        "    for line in file:",
+        "        if 'ERROR' in line:",
+        "            print(line.strip())"
+      ),
+      ".alarm": code(
+        "alarms = [",
+        "    'CPU_HIGH',",
+        "    'MEMORY_HIGH',",
+        "    'CPU_HIGH',",
+        "    'NETWORK_DOWN',",
+        "    'CPU_HIGH'",
+        "]",
+        "",
+        "frequency = {}",
+        "for alarm in alarms:",
+        "    frequency[alarm] = frequency.get(alarm, 0) + 1",
+        "",
+        "most_common = max(frequency, key=frequency.get)",
+        "print(most_common)"
+      ),
+      ".ip": code(
+        "import ipaddress",
+        "addresses = ['192.168.1.10', '256.10.1.5', '10.0.0.1', '192.168.1']",
+        "for address in addresses:",
+        "    try:",
+        "        ipaddress.ip_address(address)",
+        "        print(address, 'VALID')",
+        "    except ValueError:",
+        "        print(address, 'INVALID')"
+      ),
+      ".sub": code(
+        "import ipaddress",
+        "network = ipaddress.ip_network('192.168.10.0/24', strict=False)",
+        "print('Network:', network.network_address)",
+        "print('Broadcast:', network.broadcast_address)",
+        "print('Subnet mask:', network.netmask)",
+        "print('Usable hosts:', network.num_addresses - 2)"
+      ),
+      ".route": code(
+        "import ipaddress",
+        "routes = ['10.0.0.0/8', '10.1.0.0/16', '0.0.0.0/0']",
+        "destination = ipaddress.ip_address('10.1.2.25')",
+        "matching = [ipaddress.ip_network(route) for route in routes if destination in ipaddress.ip_network(route)]",
+        "best_route = max(matching, key=lambda network: network.prefixlen)",
+        "print('Best matching route:', best_route)",
+        "print('Longest prefix:', best_route.prefixlen)"
+      ),
+      ".logip": code(
+        "import re",
+        "log_lines = [",
+        "    'Connection from 192.168.1.10 failed',",
+        "    'Request from 10.0.0.5 succeeded',",
+        "    'Repeated failure from 192.168.1.10'",
+        "]",
+        "ip_pattern = r'\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b'",
+        "counts = {}",
+        "for line in log_lines:",
+        "    for address in re.findall(ip_pattern, line):",
+        "        counts[address] = counts.get(address, 0) + 1",
+        "print('IP frequencies:', counts)"
+      ),
+      ".json": code(
+        "import json",
+        "payload = '{\"device\": \"router-01\", \"status\": \"UP\", \"packet_loss\": 0}'",
+        "data = json.loads(payload)",
+        "required = ['device', 'status', 'packet_loss']",
+        "missing = [key for key in required if key not in data]",
+        "if not missing and data['status'] == 'UP':",
+        "    print('PASS: valid network event')",
+        "else:",
+        "    print('FAIL: missing fields or device is not UP', missing)"
+      ),
+      ".retry": code(
+        "def call_service(simulated_statuses, max_attempts=3):",
+        "    for attempt, status in enumerate(simulated_statuses[:max_attempts], start=1):",
+        "        print('Attempt', attempt, 'status:', status)",
+        "        if status == 200:",
+        "            return 'PASS'",
+        "    return 'FAIL'",
+        "",
+        "print('Result:', call_service([503, 503, 200]))"
+      ),
+      ".qos": code(
+        "samples_ms = [18, 22, 145, 30, 210, 25]",
+        "threshold_ms = 100",
+        "high_latency = [value for value in samples_ms if value > threshold_ms]",
+        "average = sum(samples_ms) / len(samples_ms)",
+        "print('Average latency:', round(average, 2), 'ms')",
+        "print('High-latency samples:', high_latency)",
+        "print('QoS check:', 'FAIL' if high_latency else 'PASS')"
+      ),
+      ".port": code(
+        "services = {22: 'SSH', 53: 'DNS', 80: 'HTTP', 443: 'HTTPS', 161: 'SNMP'}",
+        "observed_ports = [22, 53, 8080, 443, 161]",
+        "for port in observed_ports:",
+        "    print(port, services.get(port, 'UNKNOWN SERVICE'))"
+      ),
+      ".tcpudp": code(
+        "packets = [",
+        "    {'protocol': 'TCP', 'sequence': 1, 'acknowledged': True},",
+        "    {'protocol': 'TCP', 'sequence': 2, 'acknowledged': False},",
+        "    {'protocol': 'UDP', 'sequence': 1, 'acknowledged': None}",
+        "]",
+        "for packet in packets:",
+        "    if packet['protocol'] == 'TCP':",
+        "        status = 'DELIVERED' if packet['acknowledged'] else 'RETRANSMIT / CHECK'",
+        "    else:",
+        "        status = 'SENT (no transport-level acknowledgement)'",
+        "    print(packet['protocol'], 'sequence', packet['sequence'], status)"
+      ),
+      ".dns": code(
+        "# Offline DNS lookup exercise using sample records",
+        "dns_records = {'nokia.example': '192.0.2.10', 'router.example': '192.0.2.20'}",
+        "hostname = 'nokia.example'",
+        "resolved_ip = dns_records.get(hostname)",
+        "if resolved_ip:",
+        "    print(hostname, 'resolves to', resolved_ip)",
+        "else:",
+        "    print('DNS record not found for', hostname)"
+      )
+    };
+
+
+    editor.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== "Tab") return;
+      const shortcut = editor.value.trim();
+      if (!Object.prototype.hasOwnProperty.call(snippets, shortcut)) return;
+      event.preventDefault();
+      editor.value = snippets[shortcut];
+      editor.focus();
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+    });
+
+    // Allow Tab to indent selected or current lines instead of moving focus.
+    editor.addEventListener("keydown", event => {
+      if (event.key !== "Tab" || Object.prototype.hasOwnProperty.call(snippets, editor.value.trim())) return;
+      event.preventDefault();
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.setRangeText("    ", start, end, "end");
+    });
+  </script>
+</body>
+</html>
