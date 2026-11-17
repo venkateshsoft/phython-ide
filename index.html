@@ -435,3 +435,44 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 >>>>>>> 107183f (Add Python interview dot shortcuts)
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const editor = document.querySelector('#editor');
+  const header = document.querySelector('header');
+  if (!editor || !header) return;
+
+  const snippets = {
+    '.duplicate': `items = [1, 2, 2, 3, 4, 4]\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)`,
+    '.fibonacci': `count = 10\na, b = 0, 1\nfor _ in range(count):\n    print(a, end=' ')\n    a, b = b, a + b`,
+    '.prime': `number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)`,
+    '.factorial': `number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)`,
+    '.palindrome': `text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])`,
+    '.anagram': `first = 'listen'\nsecond = 'silent'\nprint('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))`,
+    '.frequency': `items = ['a', 'b', 'a', 'c', 'b', 'a']\nfrequency = {}\nfor item in items:\n    frequency[item] = frequency.get(item, 0) + 1\nprint('Frequency:', frequency)`,
+    '.reverse': `text = 'Nokia Python'\nprint('Reversed:', text[::-1])`,
+    '.secondlargest': `numbers = [10, 4, 8, 20, 15]\nunique_numbers = sorted(set(numbers))\nprint('Second largest:', unique_numbers[-2])`,
+    '.sortdict': `scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}\nordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))\nprint('Sorted scores:', ordered)`,
+    '.missing': `numbers = [1, 2, 4, 5, 6]\nexpected = set(range(1, len(numbers) + 2))\nprint('Missing number:', (expected - set(numbers)).pop())`
+  };
+
+  const help = document.createElement('span');
+  help.className = 'muted';
+  help.textContent = ' Dot shortcuts: ' + Object.keys(snippets).join(' ');
+  header.appendChild(help);
+
+  function expandShortcut() {
+    const shortcut = editor.value.trim();
+    if (!snippets[shortcut]) return false;
+    editor.value = snippets[shortcut];
+    editor.focus();
+    editor.setSelectionRange(editor.value.length, editor.value.length);
+    return true;
+  }
+
+  editor.addEventListener('keydown', function (event) {
+    if ((event.key === 'Enter' || event.key === 'Tab') && expandShortcut()) {
+      event.preventDefault();
+    }
+  });
+});
+</script>
