@@ -531,3 +531,32 @@ window.addEventListener('load', function () {
   };
 });
 </script>
+<script>
+// Definitive Run-button fix: remove the legacy inline handler entirely.
+window.addEventListener('load', function () {
+  const editor = document.querySelector('#editor');
+  const output = document.querySelector('#out');
+  const runButton = Array.from(document.querySelectorAll('button'))
+    .find(button => button.textContent.trim().toLowerCase() === 'run');
+
+  if (!editor || !output || !runButton) return;
+
+  runButton.onclick = null;
+  runButton.addEventListener('click', async function (event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    try {
+      const python = await window.getPy();
+      let captured = '';
+      python.setStdout({ batched: text => { captured += text; } });
+      python.runPython(editor.value);
+      output.className = 'ok';
+      output.textContent = captured || 'Program completed successfully.';
+    } catch (error) {
+      output.className = 'bad';
+      output.textContent = String(error);
+    }
+  }, true);
+});
+</script>
