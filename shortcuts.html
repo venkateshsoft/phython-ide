@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Mentor IDE – Shortcut Guide</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0f172a; color: #e2e8f0; font: 15px system-ui, sans-serif; }
+    header { background: #1e293b; padding: 22px max(20px, calc((100vw - 1100px) / 2)); }
+    h1 { margin: 0 0 7px; font-size: 25px; }
+    .muted { color: #94a3b8; }
+    main { max-width: 1100px; margin: 26px auto; padding: 0 20px 40px; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .top-actions a { text-decoration: none; background: #2563eb; color: white; border-radius: 6px; padding: 9px 14px; }
+    .top-actions a.secondary { background: #334155; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+    input, select { background: #020617; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px; padding: 10px 12px; }
+    input { flex: 1; min-width: 220px; }
+    .group { margin-top: 28px; }
+    .group h2 { font-size: 18px; border-bottom: 1px solid #334155; padding-bottom: 9px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 12px; }
+    .shortcut-card { background: #172033; border: 1px solid #334155; border-radius: 9px; padding: 14px; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    code { color: #93c5fd; font-weight: 700; font-size: 16px; }
+    .shortcut-card p { margin: 12px 0 2px; color: #cbd5e1; }
+    button { background: #0f766e; border: 0; color: white; border-radius: 5px; padding: 7px 9px; cursor: pointer; }
+    button:hover { background: #0d9488; }
+    .note { background: #172033; border-left: 3px solid #0f766e; padding: 12px 15px; border-radius: 5px; margin-top: 22px; color: #cbd5e1; }
+    @media (max-width: 600px) { header { padding: 18px 20px; } main { margin-top: 18px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Python Mentor IDE – Shortcut Guide</h1>
+    <div class="muted">A separate reference page for the 25 editor shortcuts. Keep this page open beside your IDE while practising.</div>
+    <div class="top-actions">
+      <a href="index.html">← Back to Python IDE</a>
+      <a class="secondary" href="index.html" target="_blank" rel="noopener">Open IDE in new tab ↗</a>
+    </div>
+  </header>
+  <main>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search shortcut or description…" aria-label="Search shortcuts">
+      <select id="category" aria-label="Filter by category">
+        <option value="all">All categories</option>
+        <option value="Python basics">Python basics</option>
+        <option value="Networking">Networking</option>
+        <option value="API and service testing">API and service testing</option>
+        <option value="Logs and alarms">Logs and alarms</option>
+        <option value="Network performance">Network performance</option>
+      </select>
+    </div>
+    <p class="muted" id="count">Showing 25 shortcuts</p>
+    <section class="group">
+      <div class="grid" id="shortcutGrid">
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.du</code><button type="button" class="copy-btn" data-command=".du">Copy command</button></div>
+        <p>Find duplicate items</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.fb</code><button type="button" class="copy-btn" data-command=".fb">Copy command</button></div>
+        <p>Generate Fibonacci numbers</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.pr</code><button type="button" class="copy-btn" data-command=".pr">Copy command</button></div>
+        <p>Check whether a number is prime</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.fa</code><button type="button" class="copy-btn" data-command=".fa">Copy command</button></div>
+        <p>Calculate a factorial</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.pa</code><button type="button" class="copy-btn" data-command=".pa">Copy command</button></div>
+        <p>Check a palindrome</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.an</code><button type="button" class="copy-btn" data-command=".an">Copy command</button></div>
+        <p>Compare two words</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.fr</code><button type="button" class="copy-btn" data-command=".fr">Copy command</button></div>
+        <p>Count item frequency</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.rv</code><button type="button" class="copy-btn" data-command=".rv">Copy command</button></div>
+        <p>Reverse a string</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.sl</code><button type="button" class="copy-btn" data-command=".sl">Copy command</button></div>
+        <p>Find the second-largest number</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.sd</code><button type="button" class="copy-btn" data-command=".sd">Copy command</button></div>
+        <p>Sort a dictionary by value</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.mi</code><button type="button" class="copy-btn" data-command=".mi">Copy command</button></div>
+        <p>Find a missing number</p>
+      </article>
+      <article class="shortcut-card" data-category="API and service testing">
+        <div class="card-top"><code>.http</code><button type="button" class="copy-btn" data-command=".http">Copy command</button></div>
+        <p>Validate HTTP response status</p>
+      </article>
+      <article class="shortcut-card" data-category="Logs and alarms">
+        <div class="card-top"><code>.log</code><button type="button" class="copy-btn" data-command=".log">Copy command</button></div>
+        <p>Find ERROR entries in a log file</p>
+      </article>
+      <article class="shortcut-card" data-category="Logs and alarms">
+        <div class="card-top"><code>.alarm</code><button type="button" class="copy-btn" data-command=".alarm">Copy command</button></div>
+        <p>Find the most frequent alarm</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.ip</code><button type="button" class="copy-btn" data-command=".ip">Copy command</button></div>
+        <p>Validate IPv4 / IPv6 addresses</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.sub</code><button type="button" class="copy-btn" data-command=".sub">Copy command</button></div>
+        <p>Calculate subnet details</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.route</code><button type="button" class="copy-btn" data-command=".route">Copy command</button></div>
+        <p>Find the longest-prefix route</p>
+      </article>
+      <article class="shortcut-card" data-category="Logs and alarms">
+        <div class="card-top"><code>.logip</code><button type="button" class="copy-btn" data-command=".logip">Copy command</button></div>
+        <p>Count IP addresses in logs</p>
+      </article>
+      <article class="shortcut-card" data-category="API and service testing">
+        <div class="card-top"><code>.json</code><button type="button" class="copy-btn" data-command=".json">Copy command</button></div>
+        <p>Validate a network event payload</p>
+      </article>
+      <article class="shortcut-card" data-category="API and service testing">
+        <div class="card-top"><code>.retry</code><button type="button" class="copy-btn" data-command=".retry">Copy command</button></div>
+        <p>Simulate API retry handling</p>
+      </article>
+      <article class="shortcut-card" data-category="Network performance">
+        <div class="card-top"><code>.qos</code><button type="button" class="copy-btn" data-command=".qos">Copy command</button></div>
+        <p>Check latency against a threshold</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.port</code><button type="button" class="copy-btn" data-command=".port">Copy command</button></div>
+        <p>Identify common network ports</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.tcpudp</code><button type="button" class="copy-btn" data-command=".tcpudp">Copy command</button></div>
+        <p>Compare TCP and UDP behavior</p>
+      </article>
+      <article class="shortcut-card" data-category="Networking">
+        <div class="card-top"><code>.dns</code><button type="button" class="copy-btn" data-command=".dns">Copy command</button></div>
+        <p>Practise DNS lookup logic</p>
+      </article>
+      <article class="shortcut-card" data-category="Python basics">
+        <div class="card-top"><code>.fl</code><button type="button" class="copy-btn" data-command=".fl">Copy command</button></div>
+        <p>Count and filter lines</p>
+      </article>
+      </div>
+    </section>
+    <div class="note">
+      <strong>How to use:</strong> Keep this guide open in another browser tab. Return to the IDE, type the shortcut (for example, <code>.ip</code>) in the editor, then press Enter or Tab to expand the Python example. The shortcut definitions remain in the IDE; this page is a separate reference.
+    </div>
+  </main>
+  <script>
+    const search = document.querySelector("#search");
+    const category = document.querySelector("#category");
+    const cards = [...document.querySelectorAll(".shortcut-card")];
+    const count = document.querySelector("#count");
+
+    function filterCards() {
+      const query = search.value.trim().toLowerCase();
+      const selected = category.value;
+      let visible = 0;
+      cards.forEach(card => {
+        const matchesText = card.textContent.toLowerCase().includes(query);
+        const matchesCategory = selected === "all" || card.dataset.category === selected;
+        const show = matchesText && matchesCategory;
+        card.hidden = !show;
+        if (show) visible++;
+      });
+      count.textContent = `Showing ${visible} of 25 shortcuts`;
+    }
+
+    search.addEventListener("input", filterCards);
+    category.addEventListener("change", filterCards);
+
+    document.querySelectorAll(".copy-btn").forEach(button => {
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(button.dataset.command);
+          const original = button.textContent;
+          button.textContent = "Copied!";
+          setTimeout(() => button.textContent = original, 1200);
+        } catch (error) {
+          button.textContent = "Copy unavailable";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

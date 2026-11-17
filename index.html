@@ -18,6 +18,8 @@
     button { border: 0; border-radius: 6px; padding: 9px 14px; background: #2563eb; color: white; cursor: pointer; }
     button:hover { background: #1d4ed8; }
     button:disabled { opacity: .6; cursor: wait; }
+    .guide-link { display: inline-block; border-radius: 6px; padding: 9px 14px; background: #0f766e; color: white; text-decoration: none; }
+    .guide-link:hover { background: #0d9488; }
     main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: calc(100vh - 68px); }
     textarea { width: 100%; min-height: 600px; padding: 20px; background: #020617; color: #dbeafe; border: 0; outline: 0; font: 15px Consolas, monospace; line-height: 1.55; resize: vertical; tab-size: 4; }
     aside { padding: 18px; background: #172033; min-width: 0; overflow-wrap: anywhere; }
@@ -38,6 +40,7 @@
       <button id="fixButton" type="button">Auto-fix intent</button>
       <button id="runButton" type="button">Run</button>
       <button id="clearButton" type="button">Clear</button>
+      <a class="guide-link" href="shortcuts.html" target="_blank" rel="noopener">Shortcut guide ↗</a>
     </div>
   </header>
 
@@ -59,25 +62,7 @@ print(duplicates)</textarea>
     <aside>
       <h2>Mentor feedback</h2>
       <pre id="out" aria-live="polite">Ready. Click Run to execute your Python code.</pre>
-      <section class="sidebar-section">
-        <h2>Python shortcuts</h2>
-        <p class="muted">Type a short command in the editor, then press Enter or Tab to insert the example.</p>
-        <ul class="shortcut-list">
-          <li><code>.du</code><span>Find duplicate items</span></li>
-          <li><code>.fb</code><span>Generate Fibonacci numbers</span></li>
-          <li><code>.pr</code><span>Check whether a number is prime</span></li>
-          <li><code>.fa</code><span>Calculate a factorial</span></li>
-          <li><code>.pa</code><span>Check a palindrome</span></li>
-          <li><code>.an</code><span>Compare two words</span></li>
-          <li><code>.fr</code><span>Count item frequency</span></li>
-          <li><code>.rv</code><span>Reverse a string</span></li>
-          <li><code>.sl</code><span>Find the second-largest number</span></li>
-          <li><code>.sd</code><span>Sort a dictionary by value</span></li>
-          <li><code>.mi</code><span>Find a missing number</span></li>
-          <li><code>.fl</code><span>Count and filter lines</span></li>
-        </ul>
-      </section>
-      <p class="muted sidebar-section">
+<p class="muted sidebar-section">
         This browser IDE uses Pyodide to run Python locally in your browser.
         Auto-fix intent provides templates for common beginner exercises.
       </p>
@@ -375,6 +360,143 @@ print(duplicates)</textarea>
         "lines = text.splitlines()",
         "print('Line count:', len(lines))",
         "print('Non-empty lines:', [line for line in lines if line.strip()])"
+      ),
+      ".http": code(
+        "def validate_response(status_code):",
+        "    if status_code == 200:",
+        "        return 'PASS'",
+        "    else:",
+        "        return 'FAIL'",
+        "",
+        "result = validate_response(200)",
+        "print(result)"
+      ),
+      ".log": code(
+        "# Demo: create a sample log file in the browser's Python filesystem",
+        "log_content = 'INFO Service started' + chr(10) + 'ERROR API request failed' + chr(10) + 'INFO Retry completed' + chr(10) + 'ERROR Timeout while processing event'",
+        "with open('application.log', 'w') as file:",
+        "    file.write(log_content)",
+        "",
+        "with open('application.log', 'r') as file:",
+        "    for line in file:",
+        "        if 'ERROR' in line:",
+        "            print(line.strip())"
+      ),
+      ".alarm": code(
+        "alarms = [",
+        "    'CPU_HIGH',",
+        "    'MEMORY_HIGH',",
+        "    'CPU_HIGH',",
+        "    'NETWORK_DOWN',",
+        "    'CPU_HIGH'",
+        "]",
+        "",
+        "frequency = {}",
+        "for alarm in alarms:",
+        "    frequency[alarm] = frequency.get(alarm, 0) + 1",
+        "",
+        "most_common = max(frequency, key=frequency.get)",
+        "print(most_common)"
+      ),
+      ".ip": code(
+        "import ipaddress",
+        "addresses = ['192.168.1.10', '256.10.1.5', '10.0.0.1', '192.168.1']",
+        "for address in addresses:",
+        "    try:",
+        "        ipaddress.ip_address(address)",
+        "        print(address, 'VALID')",
+        "    except ValueError:",
+        "        print(address, 'INVALID')"
+      ),
+      ".sub": code(
+        "import ipaddress",
+        "network = ipaddress.ip_network('192.168.10.0/24', strict=False)",
+        "print('Network:', network.network_address)",
+        "print('Broadcast:', network.broadcast_address)",
+        "print('Subnet mask:', network.netmask)",
+        "print('Usable hosts:', network.num_addresses - 2)"
+      ),
+      ".route": code(
+        "import ipaddress",
+        "routes = ['10.0.0.0/8', '10.1.0.0/16', '0.0.0.0/0']",
+        "destination = ipaddress.ip_address('10.1.2.25')",
+        "matching = [ipaddress.ip_network(route) for route in routes if destination in ipaddress.ip_network(route)]",
+        "best_route = max(matching, key=lambda network: network.prefixlen)",
+        "print('Best matching route:', best_route)",
+        "print('Longest prefix:', best_route.prefixlen)"
+      ),
+      ".logip": code(
+        "import re",
+        "log_lines = [",
+        "    'Connection from 192.168.1.10 failed',",
+        "    'Request from 10.0.0.5 succeeded',",
+        "    'Repeated failure from 192.168.1.10'",
+        "]",
+        "ip_pattern = r'\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b'",
+        "counts = {}",
+        "for line in log_lines:",
+        "    for address in re.findall(ip_pattern, line):",
+        "        counts[address] = counts.get(address, 0) + 1",
+        "print('IP frequencies:', counts)"
+      ),
+      ".json": code(
+        "import json",
+        "payload = '{\"device\": \"router-01\", \"status\": \"UP\", \"packet_loss\": 0}'",
+        "data = json.loads(payload)",
+        "required = ['device', 'status', 'packet_loss']",
+        "missing = [key for key in required if key not in data]",
+        "if not missing and data['status'] == 'UP':",
+        "    print('PASS: valid network event')",
+        "else:",
+        "    print('FAIL: missing fields or device is not UP', missing)"
+      ),
+      ".retry": code(
+        "def call_service(simulated_statuses, max_attempts=3):",
+        "    for attempt, status in enumerate(simulated_statuses[:max_attempts], start=1):",
+        "        print('Attempt', attempt, 'status:', status)",
+        "        if status == 200:",
+        "            return 'PASS'",
+        "    return 'FAIL'",
+        "",
+        "print('Result:', call_service([503, 503, 200]))"
+      ),
+      ".qos": code(
+        "samples_ms = [18, 22, 145, 30, 210, 25]",
+        "threshold_ms = 100",
+        "high_latency = [value for value in samples_ms if value > threshold_ms]",
+        "average = sum(samples_ms) / len(samples_ms)",
+        "print('Average latency:', round(average, 2), 'ms')",
+        "print('High-latency samples:', high_latency)",
+        "print('QoS check:', 'FAIL' if high_latency else 'PASS')"
+      ),
+      ".port": code(
+        "services = {22: 'SSH', 53: 'DNS', 80: 'HTTP', 443: 'HTTPS', 161: 'SNMP'}",
+        "observed_ports = [22, 53, 8080, 443, 161]",
+        "for port in observed_ports:",
+        "    print(port, services.get(port, 'UNKNOWN SERVICE'))"
+      ),
+      ".tcpudp": code(
+        "packets = [",
+        "    {'protocol': 'TCP', 'sequence': 1, 'acknowledged': True},",
+        "    {'protocol': 'TCP', 'sequence': 2, 'acknowledged': False},",
+        "    {'protocol': 'UDP', 'sequence': 1, 'acknowledged': None}",
+        "]",
+        "for packet in packets:",
+        "    if packet['protocol'] == 'TCP':",
+        "        status = 'DELIVERED' if packet['acknowledged'] else 'RETRANSMIT / CHECK'",
+        "    else:",
+        "        status = 'SENT (no transport-level acknowledgement)'",
+        "    print(packet['protocol'], 'sequence', packet['sequence'], status)"
+      ),
+      ".dns": code(
+        "# Offline DNS lookup exercise using sample records",
+        "dns_records = {'nokia.example': '192.0.2.10', 'router.example': '192.0.2.20'}",
+        "hostname = 'nokia.example'",
+        "resolved_ip = dns_records.get(hostname)",
+        "if resolved_ip:",
+        "    print(hostname, 'resolves to', resolved_ip)",
+        "else:",
+        "    print('DNS record not found for', hostname)"
       )
     };
 
@@ -391,7 +513,7 @@ print(duplicates)</textarea>
 
     // Allow Tab to indent selected or current lines instead of moving focus.
     editor.addEventListener("keydown", event => {
-      if (event.key !== "Tab" || Object.prototype.hasOwnProperty.call(snippets, editor.value.trim())) return;
+      if (event.defaultPrevented || event.key !== "Tab" || Object.prototype.hasOwnProperty.call(snippets, editor.value.trim())) return;
       event.preventDefault();
       const start = editor.selectionStart;
       const end = editor.selectionEnd;
