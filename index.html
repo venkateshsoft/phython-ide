@@ -113,6 +113,7 @@
 items = [1, 2, 2, 3, 4, 4]
 duplicates = set(items)
 print(duplicates)
+<<<<<<< HEAD
 </textarea>
 
     <aside>
@@ -348,3 +349,89 @@ print(duplicates)
   </script>
 </body>
 </html>
+=======
+</textarea><aside><h2>Mentor feedback</h2><pre id="out">Ready.</pre><p class="muted">This public demo uses Pyodide to run Python in your browser. Safe intent templates correct common beginner exercises; ambiguous code is left unchanged.</p></aside></main>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script><script>
+const e=document.querySelector('#editor'),o=document.querySelector('#out');let pyodide;
+function dataExpr(c){let m=c.match(/\b(?:items|values|numbers|data)\s*=\s*(\[[^\n]*\]|\([^\n]*\))/);return m?m[1]:'[1, 2, 3]'}
+function fixCode(c){let l=c.toLowerCase(),d=dataExpr(c);if(/duplicate|repeated item/.test(l))return [`# Auto-corrected intent: duplicate detection\nitems = ${d}\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)\n`,'Intent recognized: duplicate detection.'];if(/factorial/.test(l))return [`number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)\n`,'Intent recognized: factorial calculation.'];if(/fibonacci|fibonocci/.test(l))return [`count = 10\na, b = 0, 1\nsequence = []\nfor _ in range(count):\n    sequence.append(a)\n    a, b = b, a + b\nprint('Fibonacci:', sequence)\n`,'Intent recognized: Fibonacci sequence.'];if(/prime/.test(l))return [`number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)\n`,'Intent recognized: prime test.'];if(/palindrome/.test(l))return [`text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])\n`,'Intent recognized: palindrome test.'];if(/reverse/.test(l))return [`items = ${d}\nprint('Reversed:', items[::-1])\n`,'Intent recognized: reverse sequence.'];if(/even|odd/.test(l))return [`number = 10\nprint('Even' if number % 2 == 0 else 'Odd')\n`,'Intent recognized: even/odd classification.'];if(/sum|total|add numbers/.test(l))return [`items = ${d}\nprint('Total:', sum(items))\n`,'Intent recognized: sum/total calculation.'];let x=c.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/^(\s*(?:if|for|while|def|class|elif|else|try|except|finally|with)\b[^:\n]*)$/gm,'$1:');return [x,x!==c?'Auto-fix applied: corrected common syntax punctuation.':'No safe automatic correction found.']}
+async function getPy(){if(!pyodide){o.textContent='Loading browser Python runtime...';pyodide=await loadPyodide()}return pyodide}
+async function check(){try{let p=await getPy();p.runPython(e.value);o.className='ok';o.textContent='OK: no syntax errors found.'}catch(x){o.className='bad';o.textContent=x.toString()}}
+async function fix(){let [c,m]=fixCode(e.value);e.value=c;try{let p=await getPy();p.runPython(c);o.className='ok';o.textContent=m+'\n\nCode is executable.'}catch(x){o.className='bad';o.textContent=m+'\n\n'+x}}
+async function run(){let [c,m]=fixCode(e.value);if(c!==e.value)e.value=c;try{let p=await getPy();let result=p.runPython(`import io, contextlib\n_buffer=io.StringIO()\nwith contextlib.redirect_stdout(_buffer):\n    exec(${JSON.stringify(c)})\n_buffer.getvalue()`);o.className='ok';o.textContent=(c!==e.value?m+'\n\n':'')+result}catch(x){o.className='bad';o.textContent=x.toString()}}
+function clearAll(){e.value='';o.textContent='Screen cleared.';e.focus()}
+</script></body></html>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const editor=document.querySelector('textarea');
+  const output=document.querySelector('pre')||document.querySelector('[role="status"]');
+  const runButton=[...document.querySelectorAll('button')].find(b=>b.textContent.trim().toLowerCase()==='run');
+  if(!editor||!output||!runButton)return;
+  async function repairedRun(event){
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    try{
+      const py=window.getPy?await window.getPy():await window.loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/'});
+      const source=["import io, contextlib","_buffer = io.StringIO()","with contextlib.redirect_stdout(_buffer):","    exec("+JSON.stringify(editor.value)+")","_buffer.getvalue()"].join("\\n");
+      output.className='ok'; output.textContent=py.runPython(source);
+    }catch(error){output.className='bad';output.textContent=String(error);}
+  }
+  window.run=repairedRun;
+  runButton.addEventListener('click',repairedRun,true);
+});
+</script>
+<script>
+// Dot-command interview snippets. The DOMContentLoaded wrapper keeps this
+// enhancement independent from the main IDE script below.
+document.addEventListener('DOMContentLoaded', function () {
+  const editor = document.querySelector('#editor');
+  const header = document.querySelector('header');
+  if (!editor || !header) return;
+
+  const snippets = {
+    '.duplicate': `items = [1, 2, 2, 3, 4, 4]\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)`,
+    '.fibonacci': `count = 10\na, b = 0, 1\nfor _ in range(count):\n    print(a, end=' ')\n    a, b = b, a + b`,
+    '.prime': `number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)`,
+    '.factorial': `number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)`,
+    '.palindrome': `text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])`,
+    '.anagram': `first = 'listen'\nsecond = 'silent'\nprint('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))`,
+    '.frequency': `items = ['a', 'b', 'a', 'c', 'b', 'a']\nfrequency = {}\nfor item in items:\n    frequency[item] = frequency.get(item, 0) + 1\nprint('Frequency:', frequency)`,
+    '.reverse': `text = 'Nokia Python'\nprint('Reversed:', text[::-1])`,
+    '.secondlargest': `numbers = [10, 4, 8, 20, 15]\nunique_numbers = sorted(set(numbers))\nprint('Second largest:', unique_numbers[-2])`,
+    '.sortdict': `scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}\nordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))\nprint('Sorted scores:', ordered)`,
+    '.missing': `numbers = [1, 2, 4, 5, 6]\nexpected = set(range(1, len(numbers) + 2))\nprint('Missing number:', (expected - set(numbers)).pop())`,
+    '.filelines': `text = 'first line' + chr(10) + 'second line' + chr(10) + 'third line'\nlines = text.splitlines()\nprint('Line count:', len(lines))\nprint('Non-empty lines:', [line for line in lines if line.strip()])`
+  };
+
+  const help = document.createElement('span');
+  help.className = 'muted';
+  help.title = 'Type a shortcut and press Enter or Tab to expand it.';
+  help.textContent = ' Dot shortcuts: .duplicate  .fibonacci  .prime  .factorial  .palindrome  .anagram  .frequency  .reverse  .secondlargest  .sortdict  .missing  .filelines';
+  header.appendChild(help);
+
+  function expandShortcut() {
+    const value = editor.value.trim();
+    const shortcut = Object.keys(snippets).find(key => value === key);
+    if (!shortcut) return false;
+    editor.value = snippets[shortcut];
+    editor.focus();
+    editor.setSelectionRange(editor.value.length, editor.value.length);
+    return true;
+  }
+
+  editor.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter' || event.key === 'Tab') {
+      if (expandShortcut()) event.preventDefault();
+    }
+  });
+
+  editor.addEventListener('input', function () {
+    const value = editor.value.trim();
+    if (snippets[value]) {
+      editor.dataset.shortcutReady = 'true';
+    } else {
+      delete editor.dataset.shortcutReady;
+    }
+  });
+});
+</script>
+>>>>>>> 107183f (Add Python interview dot shortcuts)
