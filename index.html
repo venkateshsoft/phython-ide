@@ -4,256 +4,214 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Python Mentor IDE</title>
-
   <style>
-    body {
-      margin: 0;
-      background: #0f172a;
-      color: #e2e8f0;
-      font: 15px system-ui;
-    }
-
-    header {
-      padding: 16px 22px;
-      background: #1e293b;
-      display: flex;
-      gap: 9px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    h1 {
-      font-size: 20px;
-      margin: 0 auto 0 0;
-    }
-
-    button {
-      border: 0;
-      border-radius: 6px;
-      padding: 9px 14px;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      min-height: calc(100vh - 68px);
-    }
-
-    textarea {
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
-      min-height: 600px;
-      padding: 20px;
-      background: #020617;
-      color: #dbeafe;
-      border: 0;
-      outline: 0;
-      font: 15px Consolas, monospace;
-      line-height: 1.55;
-      resize: none;
-    }
-
-    aside {
-      padding: 18px;
-      background: #172033;
-    }
-
-    pre {
-      white-space: pre-wrap;
-      background: #020617;
-      padding: 14px;
-      border-radius: 6px;
-      min-height: 140px;
-    }
-
-    .ok {
-      color: #86efac;
-    }
-
-    .bad {
-      color: #fca5a5;
-    }
-
-    .muted {
-      color: #94a3b8;
-    }
-
-    @media (max-width: 800px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-
-      aside {
-        min-height: 250px;
-      }
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0f172a; color: #e2e8f0; font: 15px system-ui, sans-serif; }
+    header { padding: 16px 22px; background: #1e293b; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    h1 { font-size: 20px; margin: 0 18px 0 0; width: 100%; }
+    .toolbar { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+    .sidebar-section { margin-top: 22px; }
+    .shortcut-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .shortcut-list li { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; }
+    .shortcut-list code { color: #93c5fd; font-weight: 600; }
+    .shortcut-list span { display: block; color: #cbd5e1; font-size: 12px; margin-top: 3px; }
+    button { border: 0; border-radius: 6px; padding: 9px 14px; background: #2563eb; color: white; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { opacity: .6; cursor: wait; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: calc(100vh - 68px); }
+    textarea { width: 100%; min-height: 600px; padding: 20px; background: #020617; color: #dbeafe; border: 0; outline: 0; font: 15px Consolas, monospace; line-height: 1.55; resize: vertical; tab-size: 4; }
+    aside { padding: 18px; background: #172033; min-width: 0; overflow-wrap: anywhere; }
+    aside h2 { margin-top: 4px; }
+    .sidebar-section h2 { font-size: 17px; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #020617; padding: 14px; border-radius: 6px; min-height: 140px; }
+    .ok { color: #86efac; }
+    .bad { color: #fca5a5; }
+    .muted { color: #94a3b8; }
+    @media (max-width: 800px) { main { grid-template-columns: 1fr; } aside { min-height: 250px; } textarea { min-height: 420px; } }
   </style>
 </head>
-
 <body>
   <header>
     <h1>Python Mentor IDE</h1>
-    <button onclick="check()">Check code</button>
-    <button onclick="fix()">Auto-fix intent</button>
-    <button onclick="run()">Run</button>
-    <button onclick="clearAll()">Clear</button>
-
-    <span class="muted">
-      Keywords: duplicate, factorial, Fibonacci, prime, palindrome, reverse, even, sum
-    </span>
+    <div class="toolbar">
+      <button id="checkButton" type="button">Check code</button>
+      <button id="fixButton" type="button">Auto-fix intent</button>
+      <button id="runButton" type="button">Run</button>
+      <button id="clearButton" type="button">Clear</button>
+    </div>
   </header>
 
   <main>
-    <textarea id="editor" spellcheck="false"># Try describing your intent with a keyword
+    <textarea id="editor" spellcheck="false" aria-label="Python code editor"># Try describing your intent with a keyword
 # Example: identify duplicate items
 items = [1, 2, 2, 3, 4, 4]
-duplicates = set(items)
-print(duplicates)
-<<<<<<< HEAD
-</textarea>
 
+seen = set()
+duplicates = set()
+
+for item in items:
+    if item in seen:
+        duplicates.add(item)
+    else:
+        seen.add(item)
+
+print(duplicates)</textarea>
     <aside>
       <h2>Mentor feedback</h2>
-      <pre id="out">Ready.</pre>
-
-      <p class="muted">
-        This public demo uses Pyodide to run Python in your browser.
-        Safe intent templates correct common beginner exercises.
+      <pre id="out" aria-live="polite">Ready. Click Run to execute your Python code.</pre>
+      <section class="sidebar-section">
+        <h2>Python shortcuts</h2>
+        <p class="muted">Type a short command in the editor, then press Enter or Tab to insert the example.</p>
+        <ul class="shortcut-list">
+          <li><code>.du</code><span>Find duplicate items</span></li>
+          <li><code>.fb</code><span>Generate Fibonacci numbers</span></li>
+          <li><code>.pr</code><span>Check whether a number is prime</span></li>
+          <li><code>.fa</code><span>Calculate a factorial</span></li>
+          <li><code>.pa</code><span>Check a palindrome</span></li>
+          <li><code>.an</code><span>Compare two words</span></li>
+          <li><code>.fr</code><span>Count item frequency</span></li>
+          <li><code>.rv</code><span>Reverse a string</span></li>
+          <li><code>.sl</code><span>Find the second-largest number</span></li>
+          <li><code>.sd</code><span>Sort a dictionary by value</span></li>
+          <li><code>.mi</code><span>Find a missing number</span></li>
+          <li><code>.fl</code><span>Count and filter lines</span></li>
+        </ul>
+      </section>
+      <p class="muted sidebar-section">
+        This browser IDE uses Pyodide to run Python locally in your browser.
+        Auto-fix intent provides templates for common beginner exercises.
       </p>
     </aside>
   </main>
 
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
-
   <script>
-    const e = document.querySelector("#editor");
-    const o = document.querySelector("#out");
+    "use strict";
 
-    let pyodide;
+    const editor = document.querySelector("#editor");
+    const output = document.querySelector("#out");
+    const runButton = document.querySelector("#runButton");
+    const checkButton = document.querySelector("#checkButton");
+    const fixButton = document.querySelector("#fixButton");
+    const clearButton = document.querySelector("#clearButton");
+
+    let pyodidePromise = null;
+
+    function setMessage(message, kind) {
+      output.className = kind || "";
+      output.textContent = message;
+    }
+
+    async function getPyodide() {
+      if (!pyodidePromise) {
+        setMessage("Loading browser Python runtime...", "");
+        pyodidePromise = loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/"
+        }).catch(error => {
+          pyodidePromise = null;
+          throw error;
+        });
+      }
+      return await pyodidePromise;
+    }
 
     function code(...lines) {
       return lines.join("\n") + "\n";
     }
 
-    function dataExpr(c) {
-      const match = c.match(
+    function dataExpr(source) {
+      const match = source.match(
         /\b(?:items|values|numbers|data)\s*=\s*(\[[^\n]*\]|\([^\n]*\))/
       );
-
       return match ? match[1] : "[1, 2, 3]";
     }
 
-    function fixCode(c) {
-      const lower = c.toLowerCase();
-      const data = dataExpr(c);
+    function fixCode(source) {
+      const lower = source.toLowerCase();
+      const data = dataExpr(source);
 
       if (/duplicate|repeated item/.test(lower)) {
-        return [
-          code(
-            "# Auto-corrected intent: duplicate detection",
-            `items = ${data}`,
-            "duplicates = []",
-            "for item in items:",
-            "    if items.count(item) > 1 and item not in duplicates:",
-            "        duplicates.append(item)",
-            "print('Duplicate items:', duplicates)"
-          ),
-          "Intent recognized: duplicate detection."
-        ];
+        return [code(
+          "# Auto-corrected intent: duplicate detection",
+          `items = ${data}`,
+          "seen = set()",
+          "duplicates = set()",
+          "for item in items:",
+          "    if item in seen:",
+          "        duplicates.add(item)",
+          "    else:",
+          "        seen.add(item)",
+          "print('Duplicate items:', duplicates)"
+        ), "Intent recognized: duplicate detection."];
       }
 
       if (/factorial/.test(lower)) {
-        return [
-          code(
-            "number = 5",
-            "result = 1",
-            "for value in range(2, number + 1):",
-            "    result *= value",
-            "print('Factorial:', result)"
-          ),
-          "Intent recognized: factorial calculation."
-        ];
+        return [code(
+          "number = 5",
+          "result = 1",
+          "for value in range(2, number + 1):",
+          "    result *= value",
+          "print('Factorial:', result)"
+        ), "Intent recognized: factorial calculation."];
       }
 
       if (/fibonacci|fibonocci/.test(lower)) {
-        return [
-          code(
-            "count = 10",
-            "a, b = 0, 1",
-            "sequence = []",
-            "for _ in range(count):",
-            "    sequence.append(a)",
-            "    a, b = b, a + b",
-            "print('Fibonacci:', sequence)"
-          ),
-          "Intent recognized: Fibonacci sequence."
-        ];
+        return [code(
+          "count = 10",
+          "a, b = 0, 1",
+          "sequence = []",
+          "for _ in range(count):",
+          "    sequence.append(a)",
+          "    a, b = b, a + b",
+          "print('Fibonacci:', sequence)"
+        ), "Intent recognized: Fibonacci sequence."];
       }
 
-      if (/prime/.test(lower)) {
-        return [
-          code(
-            "number = 29",
-            "is_prime = number > 1 and all(",
-            "    number % divisor",
-            "    for divisor in range(2, int(number ** 0.5) + 1)",
-            ")",
-            "print('Prime:', is_prime)"
-          ),
-          "Intent recognized: prime test."
-        ];
+      if (/\bprime\b/.test(lower)) {
+        return [code(
+          "number = 29",
+          "is_prime = number > 1 and all(",
+          "    number % divisor",
+          "    for divisor in range(2, int(number ** 0.5) + 1)",
+          ")",
+          "print('Prime:', is_prime)"
+        ), "Intent recognized: prime test."];
       }
 
       if (/palindrome/.test(lower)) {
-        return [
-          code(
-            "text = 'level'",
-            "clean = ''.join(",
-            "    character.lower()",
-            "    for character in text",
-            "    if character.isalnum()",
-            ")",
-            "print('Palindrome:', clean == clean[::-1])"
-          ),
-          "Intent recognized: palindrome test."
-        ];
+        return [code(
+          "text = 'level'",
+          "clean = ''.join(",
+          "    character.lower()",
+          "    for character in text",
+          "    if character.isalnum()",
+          ")",
+          "print('Palindrome:', clean == clean[::-1])"
+        ), "Intent recognized: palindrome test."];
       }
 
       if (/reverse/.test(lower)) {
-        return [
-          code(
-            `items = ${data}`,
-            "print('Reversed:', items[::-1])"
-          ),
-          "Intent recognized: reverse sequence."
-        ];
+        return [code(
+          `items = ${data}`,
+          "print('Reversed:', items[::-1])"
+        ), "Intent recognized: reverse sequence."];
       }
 
-      if (/even|odd/.test(lower)) {
-        return [
-          code(
-            "number = 10",
-            "print('Even' if number % 2 == 0 else 'Odd')"
-          ),
-          "Intent recognized: even/odd classification."
-        ];
+      if (/\beven\b|\bodd\b/.test(lower)) {
+        return [code(
+          "number = 10",
+          "print('Even' if number % 2 == 0 else 'Odd')"
+        ), "Intent recognized: even/odd classification."];
       }
 
       if (/sum|total|add numbers/.test(lower)) {
-        return [
-          code(
-            `items = ${data}`,
-            "print('Total:', sum(items))"
-          ),
-          "Intent recognized: sum/total calculation."
-        ];
+        return [code(
+          `items = ${data}`,
+          "print('Total:', sum(items))"
+        ), "Intent recognized: sum/total calculation."];
       }
 
-      const corrected = c
+      const corrected = source
         .replace(/[“”]/g, '"')
         .replace(/[‘’]/g, "'")
         .replace(
@@ -263,300 +221,182 @@ print(duplicates)
 
       return [
         corrected,
-        corrected !== c
+        corrected !== source
           ? "Auto-fix applied: corrected common syntax punctuation."
-          : "No safe automatic correction found."
+          : "No safe automatic correction found. Your code was left unchanged."
       ];
     }
 
-    async function getPy() {
-      if (!pyodide) {
-        o.textContent = "Loading browser Python runtime...";
-        pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/"
-        });
-      }
-
-      return pyodide;
-    }
-
-    async function check() {
+    async function withBusy(button, action) {
+      const buttons = [runButton, checkButton, fixButton, clearButton];
+      buttons.forEach(item => item.disabled = true);
       try {
-        const p = await getPy();
-        p.runPython(e.value);
-
-        o.className = "ok";
-        o.textContent = "OK: no syntax errors found.";
-      } catch (error) {
-        o.className = "bad";
-        o.textContent = error.toString();
+        await action();
+      } finally {
+        buttons.forEach(item => item.disabled = false);
       }
     }
 
-    async function fix() {
-      const result = fixCode(e.value);
-      e.value = result[0];
-
-      try {
-        const p = await getPy();
-        p.runPython(result[0]);
-
-        o.className = "ok";
-        o.textContent = result[1] + "\n\nCode is executable.";
-      } catch (error) {
-        o.className = "bad";
-        o.textContent = result[1] + "\n\n" + error.toString();
-      }
+    async function checkCode() {
+      await withBusy(checkButton, async () => {
+        try {
+          const python = await getPyodide();
+          // compile() checks syntax without executing the user's program.
+          const source = "compile(" + JSON.stringify(editor.value) + ", '<editor>', 'exec')";
+          python.runPython(source);
+          setMessage("OK: no syntax errors found. Your code was not executed.", "ok");
+        } catch (error) {
+          setMessage(String(error), "bad");
+        }
+      });
     }
 
-    async function run() {
-      const result = fixCode(e.value);
-      const correctedCode = result[0];
-      const changed = correctedCode !== e.value;
+    async function autoFix() {
+      await withBusy(fixButton, async () => {
+        const [corrected, explanation] = fixCode(editor.value);
+        editor.value = corrected;
+        try {
+          const python = await getPyodide();
+          const source = "compile(" + JSON.stringify(editor.value) + ", '<editor>', 'exec')";
+          python.runPython(source);
+          setMessage(explanation + "\n\nCode passed the syntax check. Click Run to execute it.", "ok");
+        } catch (error) {
+          setMessage(explanation + "\n\n" + String(error), "bad");
+        }
+      });
+    }
 
-      if (changed) {
-        e.value = correctedCode;
-      }
+    async function runCode() {
+      await withBusy(runButton, async () => {
+        try {
+          const python = await getPyodide();
+          let capturedOutput = "";
+          let capturedErrors = "";
 
-      try {
-        const p = await getPy();
+          // Capture stdout/stderr without constructing a second Python exec() wrapper.
+          python.setStdout({
+            batched: text => { capturedOutput += text; }
+          });
+          python.setStderr({
+            batched: text => { capturedErrors += text; }
+          });
 
-        const source = [
-          "import io, contextlib",
-          "_buffer = io.StringIO()",
-          "with contextlib.redirect_stdout(_buffer):",
-          "    exec(" + JSON.stringify(correctedCode) + ")",
-          "_buffer.getvalue()"
-        ].join("\n");
+          await python.runPythonAsync(editor.value);
 
-        const output = p.runPython(source);
-
-        o.className = "ok";
-        o.textContent =
-          (changed ? result[1] + "\n\n" : "") + output;
-      } catch (error) {
-        o.className = "bad";
-        o.textContent = error.toString();
-      }
+          const result = capturedOutput + (capturedErrors ? "\n" + capturedErrors : "");
+          setMessage(result || "Program completed successfully (no output).", "ok");
+        } catch (error) {
+          setMessage(String(error), "bad");
+        }
+      });
     }
 
     function clearAll() {
-      e.value = "";
-      o.className = "";
-      o.textContent = "Screen cleared.";
-      e.focus();
+      editor.value = "";
+      setMessage("Screen cleared.", "");
+      editor.focus();
     }
+
+    checkButton.addEventListener("click", checkCode);
+    fixButton.addEventListener("click", autoFix);
+    runButton.addEventListener("click", runCode);
+    clearButton.addEventListener("click", clearAll);
+
+    // Interview-practice shortcuts: type one shortcut and press Enter or Tab.
+    const snippets = {
+      ".du": code(
+        "items = [1, 2, 2, 3, 4, 4]",
+        "seen = set()",
+        "duplicates = set()",
+        "for item in items:",
+        "    if item in seen:",
+        "        duplicates.add(item)",
+        "    else:",
+        "        seen.add(item)",
+        "print('Duplicate items:', duplicates)"
+      ),
+      ".fb": code(
+        "count = 10",
+        "a, b = 0, 1",
+        "for _ in range(count):",
+        "    print(a, end=' ')",
+        "    a, b = b, a + b"
+      ),
+      ".pr": code(
+        "number = 29",
+        "is_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))",
+        "print('Prime:', is_prime)"
+      ),
+      ".fa": code(
+        "number = 5",
+        "result = 1",
+        "for value in range(2, number + 1):",
+        "    result *= value",
+        "print('Factorial:', result)"
+      ),
+      ".pa": code(
+        "text = 'level'",
+        "clean = ''.join(character.lower() for character in text if character.isalnum())",
+        "print('Palindrome:', clean == clean[::-1])"
+      ),
+      ".an": code(
+        "first = 'listen'",
+        "second = 'silent'",
+        "print('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))"
+      ),
+      ".fr": code(
+        "items = ['a', 'b', 'a', 'c', 'b', 'a']",
+        "frequency = {}",
+        "for item in items:",
+        "    frequency[item] = frequency.get(item, 0) + 1",
+        "print('Frequency:', frequency)"
+      ),
+      ".rv": code(
+        "text = 'Nokia Python'",
+        "print('Reversed:', text[::-1])"
+      ),
+      ".sl": code(
+        "numbers = [10, 4, 8, 20, 15]",
+        "unique_numbers = sorted(set(numbers))",
+        "print('Second largest:', unique_numbers[-2])"
+      ),
+      ".sd": code(
+        "scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}",
+        "ordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))",
+        "print('Sorted scores:', ordered)"
+      ),
+      ".mi": code(
+        "numbers = [1, 2, 4, 5, 6]",
+        "expected = set(range(1, len(numbers) + 2))",
+        "print('Missing number:', (expected - set(numbers)).pop())"
+      ),
+      ".fl": code(
+        "text = 'first line' + chr(10) + 'second line' + chr(10) + 'third line'",
+        "lines = text.splitlines()",
+        "print('Line count:', len(lines))",
+        "print('Non-empty lines:', [line for line in lines if line.strip()])"
+      )
+    };
+
+
+    editor.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== "Tab") return;
+      const shortcut = editor.value.trim();
+      if (!Object.prototype.hasOwnProperty.call(snippets, shortcut)) return;
+      event.preventDefault();
+      editor.value = snippets[shortcut];
+      editor.focus();
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+    });
+
+    // Allow Tab to indent selected or current lines instead of moving focus.
+    editor.addEventListener("keydown", event => {
+      if (event.key !== "Tab" || Object.prototype.hasOwnProperty.call(snippets, editor.value.trim())) return;
+      event.preventDefault();
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.setRangeText("    ", start, end, "end");
+    });
   </script>
 </body>
 </html>
-=======
-</textarea><aside><h2>Mentor feedback</h2><pre id="out">Ready.</pre><p class="muted">This public demo uses Pyodide to run Python in your browser. Safe intent templates correct common beginner exercises; ambiguous code is left unchanged.</p></aside></main>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script><script>
-const e=document.querySelector('#editor'),o=document.querySelector('#out');let pyodide;
-function dataExpr(c){let m=c.match(/\b(?:items|values|numbers|data)\s*=\s*(\[[^\n]*\]|\([^\n]*\))/);return m?m[1]:'[1, 2, 3]'}
-function fixCode(c){let l=c.toLowerCase(),d=dataExpr(c);if(/duplicate|repeated item/.test(l))return [`# Auto-corrected intent: duplicate detection\nitems = ${d}\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)\n`,'Intent recognized: duplicate detection.'];if(/factorial/.test(l))return [`number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)\n`,'Intent recognized: factorial calculation.'];if(/fibonacci|fibonocci/.test(l))return [`count = 10\na, b = 0, 1\nsequence = []\nfor _ in range(count):\n    sequence.append(a)\n    a, b = b, a + b\nprint('Fibonacci:', sequence)\n`,'Intent recognized: Fibonacci sequence.'];if(/prime/.test(l))return [`number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)\n`,'Intent recognized: prime test.'];if(/palindrome/.test(l))return [`text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])\n`,'Intent recognized: palindrome test.'];if(/reverse/.test(l))return [`items = ${d}\nprint('Reversed:', items[::-1])\n`,'Intent recognized: reverse sequence.'];if(/even|odd/.test(l))return [`number = 10\nprint('Even' if number % 2 == 0 else 'Odd')\n`,'Intent recognized: even/odd classification.'];if(/sum|total|add numbers/.test(l))return [`items = ${d}\nprint('Total:', sum(items))\n`,'Intent recognized: sum/total calculation.'];let x=c.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/^(\s*(?:if|for|while|def|class|elif|else|try|except|finally|with)\b[^:\n]*)$/gm,'$1:');return [x,x!==c?'Auto-fix applied: corrected common syntax punctuation.':'No safe automatic correction found.']}
-async function getPy(){if(!pyodide){o.textContent='Loading browser Python runtime...';pyodide=await loadPyodide()}return pyodide}
-async function check(){try{let p=await getPy();p.runPython(e.value);o.className='ok';o.textContent='OK: no syntax errors found.'}catch(x){o.className='bad';o.textContent=x.toString()}}
-async function fix(){let [c,m]=fixCode(e.value);e.value=c;try{let p=await getPy();p.runPython(c);o.className='ok';o.textContent=m+'\n\nCode is executable.'}catch(x){o.className='bad';o.textContent=m+'\n\n'+x}}
-async function run(){let [c,m]=fixCode(e.value);if(c!==e.value)e.value=c;try{let p=await getPy();let result=p.runPython(`import io, contextlib\n_buffer=io.StringIO()\nwith contextlib.redirect_stdout(_buffer):\n    exec(${JSON.stringify(c)})\n_buffer.getvalue()`);o.className='ok';o.textContent=(c!==e.value?m+'\n\n':'')+result}catch(x){o.className='bad';o.textContent=x.toString()}}
-function clearAll(){e.value='';o.textContent='Screen cleared.';e.focus()}
-</script></body></html>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  const editor=document.querySelector('textarea');
-  const output=document.querySelector('pre')||document.querySelector('[role="status"]');
-  const runButton=[...document.querySelectorAll('button')].find(b=>b.textContent.trim().toLowerCase()==='run');
-  if(!editor||!output||!runButton)return;
-  async function repairedRun(event){
-    if(event){event.preventDefault();event.stopImmediatePropagation();}
-    try{
-      const py=window.getPy?await window.getPy():await window.loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/'});
-      const source=["import io, contextlib","_buffer = io.StringIO()","with contextlib.redirect_stdout(_buffer):","    exec("+JSON.stringify(editor.value)+")","_buffer.getvalue()"].join("\\n");
-      output.className='ok'; output.textContent=py.runPython(source);
-    }catch(error){output.className='bad';output.textContent=String(error);}
-  }
-  window.run=repairedRun;
-  runButton.addEventListener('click',repairedRun,true);
-});
-</script>
-<script>
-// Dot-command interview snippets. The DOMContentLoaded wrapper keeps this
-// enhancement independent from the main IDE script below.
-document.addEventListener('DOMContentLoaded', function () {
-  const editor = document.querySelector('#editor');
-  const header = document.querySelector('header');
-  if (!editor || !header) return;
-
-  const snippets = {
-    '.duplicate': `items = [1, 2, 2, 3, 4, 4]\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)`,
-    '.fibonacci': `count = 10\na, b = 0, 1\nfor _ in range(count):\n    print(a, end=' ')\n    a, b = b, a + b`,
-    '.prime': `number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)`,
-    '.factorial': `number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)`,
-    '.palindrome': `text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])`,
-    '.anagram': `first = 'listen'\nsecond = 'silent'\nprint('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))`,
-    '.frequency': `items = ['a', 'b', 'a', 'c', 'b', 'a']\nfrequency = {}\nfor item in items:\n    frequency[item] = frequency.get(item, 0) + 1\nprint('Frequency:', frequency)`,
-    '.reverse': `text = 'Nokia Python'\nprint('Reversed:', text[::-1])`,
-    '.secondlargest': `numbers = [10, 4, 8, 20, 15]\nunique_numbers = sorted(set(numbers))\nprint('Second largest:', unique_numbers[-2])`,
-    '.sortdict': `scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}\nordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))\nprint('Sorted scores:', ordered)`,
-    '.missing': `numbers = [1, 2, 4, 5, 6]\nexpected = set(range(1, len(numbers) + 2))\nprint('Missing number:', (expected - set(numbers)).pop())`,
-    '.filelines': `text = 'first line' + chr(10) + 'second line' + chr(10) + 'third line'\nlines = text.splitlines()\nprint('Line count:', len(lines))\nprint('Non-empty lines:', [line for line in lines if line.strip()])`
-  };
-
-  const help = document.createElement('span');
-  help.className = 'muted';
-  help.title = 'Type a shortcut and press Enter or Tab to expand it.';
-  help.textContent = ' Dot shortcuts: .duplicate  .fibonacci  .prime  .factorial  .palindrome  .anagram  .frequency  .reverse  .secondlargest  .sortdict  .missing  .filelines';
-  header.appendChild(help);
-
-  function expandShortcut() {
-    const value = editor.value.trim();
-    const shortcut = Object.keys(snippets).find(key => value === key);
-    if (!shortcut) return false;
-    editor.value = snippets[shortcut];
-    editor.focus();
-    editor.setSelectionRange(editor.value.length, editor.value.length);
-    return true;
-  }
-
-  editor.addEventListener('keydown', function (event) {
-    if (event.key === 'Enter' || event.key === 'Tab') {
-      if (expandShortcut()) event.preventDefault();
-    }
-  });
-
-  editor.addEventListener('input', function () {
-    const value = editor.value.trim();
-    if (snippets[value]) {
-      editor.dataset.shortcutReady = 'true';
-    } else {
-      delete editor.dataset.shortcutReady;
-    }
-  });
-});
-</script>
->>>>>>> 107183f (Add Python interview dot shortcuts)
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const editor = document.querySelector('#editor');
-  const header = document.querySelector('header');
-  if (!editor || !header) return;
-
-  const snippets = {
-    '.duplicate': `items = [1, 2, 2, 3, 4, 4]\nduplicates = []\nfor item in items:\n    if items.count(item) > 1 and item not in duplicates:\n        duplicates.append(item)\nprint('Duplicate items:', duplicates)`,
-    '.fibonacci': `count = 10\na, b = 0, 1\nfor _ in range(count):\n    print(a, end=' ')\n    a, b = b, a + b`,
-    '.prime': `number = 29\nis_prime = number > 1 and all(number % divisor for divisor in range(2, int(number ** 0.5) + 1))\nprint('Prime:', is_prime)`,
-    '.factorial': `number = 5\nresult = 1\nfor value in range(2, number + 1):\n    result *= value\nprint('Factorial:', result)`,
-    '.palindrome': `text = 'level'\nclean = ''.join(character.lower() for character in text if character.isalnum())\nprint('Palindrome:', clean == clean[::-1])`,
-    '.anagram': `first = 'listen'\nsecond = 'silent'\nprint('Anagram:', sorted(first.replace(' ', '').lower()) == sorted(second.replace(' ', '').lower()))`,
-    '.frequency': `items = ['a', 'b', 'a', 'c', 'b', 'a']\nfrequency = {}\nfor item in items:\n    frequency[item] = frequency.get(item, 0) + 1\nprint('Frequency:', frequency)`,
-    '.reverse': `text = 'Nokia Python'\nprint('Reversed:', text[::-1])`,
-    '.secondlargest': `numbers = [10, 4, 8, 20, 15]\nunique_numbers = sorted(set(numbers))\nprint('Second largest:', unique_numbers[-2])`,
-    '.sortdict': `scores = {'Alice': 82, 'Bob': 95, 'Cara': 88}\nordered = dict(sorted(scores.items(), key=lambda pair: pair[1], reverse=True))\nprint('Sorted scores:', ordered)`,
-    '.missing': `numbers = [1, 2, 4, 5, 6]\nexpected = set(range(1, len(numbers) + 2))\nprint('Missing number:', (expected - set(numbers)).pop())`
-  };
-
-  const help = document.createElement('span');
-  help.className = 'muted';
-  help.textContent = ' Dot shortcuts: ' + Object.keys(snippets).join(' ');
-  header.appendChild(help);
-
-  function expandShortcut() {
-    const shortcut = editor.value.trim();
-    if (!snippets[shortcut]) return false;
-    editor.value = snippets[shortcut];
-    editor.focus();
-    editor.setSelectionRange(editor.value.length, editor.value.length);
-    return true;
-  }
-
-  editor.addEventListener('keydown', function (event) {
-    if ((event.key === 'Enter' || event.key === 'Tab') && expandShortcut()) {
-      event.preventDefault();
-    }
-  });
-});
-</script>
-<script>
-// Override the legacy runner with a newline-safe Pyodide wrapper.
-document.addEventListener('DOMContentLoaded', function () {
-  window.run = async function () {
-    const editor = document.querySelector('#editor');
-    const output = document.querySelector('#out');
-    try {
-      const python = await window.getPy();
-      const source = [
-        'import io, contextlib',
-        '_buffer = io.StringIO()',
-        'with contextlib.redirect_stdout(_buffer):',
-        '    exec(' + JSON.stringify(editor.value) + ')',
-        '_buffer.getvalue()'
-      ].join('\n');
-      output.className = 'ok';
-      output.textContent = python.runPython(source);
-    } catch (error) {
-      output.className = 'bad';
-      output.textContent = String(error);
-    }
-  };
-});
-</script>
-<script>
-// Robust runner: execute the editor contents directly and capture stdout.
-window.addEventListener('load', function () {
-  const editor = document.querySelector('#editor');
-  const output = document.querySelector('#out');
-  if (!editor || !output) return;
-
-  // Remove accidental Git conflict markers from the starter code.
-  editor.value = editor.value.replace(/^<<<<<<<.*\r?\n?|^=======\r?\n?|^>>>>>>>.*\r?\n?/gm, '');
-
-  window.run = async function () {
-    try {
-      const python = await window.getPy();
-      let captured = '';
-
-      python.setStdout({
-        batched: function (text) {
-          captured += text;
-        }
-      });
-
-      python.runPython(editor.value);
-      output.className = 'ok';
-      output.textContent = captured || 'Program completed successfully.';
-    } catch (error) {
-      output.className = 'bad';
-      output.textContent = String(error);
-    }
-  };
-});
-</script>
-<script>
-// Definitive Run-button fix: remove the legacy inline handler entirely.
-window.addEventListener('load', function () {
-  const editor = document.querySelector('#editor');
-  const output = document.querySelector('#out');
-  const runButton = Array.from(document.querySelectorAll('button'))
-    .find(button => button.textContent.trim().toLowerCase() === 'run');
-
-  if (!editor || !output || !runButton) return;
-
-  runButton.onclick = null;
-  runButton.addEventListener('click', async function (event) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    try {
-      const python = await window.getPy();
-      let captured = '';
-      python.setStdout({ batched: text => { captured += text; } });
-      python.runPython(editor.value);
-      output.className = 'ok';
-      output.textContent = captured || 'Program completed successfully.';
-    } catch (error) {
-      output.className = 'bad';
-      output.textContent = String(error);
-    }
-  }, true);
-});
-</script>
