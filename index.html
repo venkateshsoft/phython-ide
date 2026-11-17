@@ -476,3 +476,27 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+<script>
+// Override the legacy runner with a newline-safe Pyodide wrapper.
+document.addEventListener('DOMContentLoaded', function () {
+  window.run = async function () {
+    const editor = document.querySelector('#editor');
+    const output = document.querySelector('#out');
+    try {
+      const python = await window.getPy();
+      const source = [
+        'import io, contextlib',
+        '_buffer = io.StringIO()',
+        'with contextlib.redirect_stdout(_buffer):',
+        '    exec(' + JSON.stringify(editor.value) + ')',
+        '_buffer.getvalue()'
+      ].join('\n');
+      output.className = 'ok';
+      output.textContent = python.runPython(source);
+    } catch (error) {
+      output.className = 'bad';
+      output.textContent = String(error);
+    }
+  };
+});
+</script>
